@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.PolygonOverlay;
 import com.naver.maps.map.overlay.PolylineOverlay;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<LatLng> mLatLngList;
 
     Button btnTest;
+    Button btnMove;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
@@ -95,10 +98,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         naverMap.setLocationSource(locationSource);
 
 
-        naverMap.setOnMapClickListener((point, coord) -> {
+        naverMap.setOnMapLongClickListener((point, coord) -> {
                     Marker marker = new Marker();
                     marker.setPosition(new LatLng(coord.latitude, coord.longitude));
                     marker.setMap(naverMap);
+
+                    InfoWindow infoWindow = new InfoWindow();
+                    infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(MainActivity.this) {
+                        @NonNull
+                        @Override
+                        public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                            return (coord.latitude + ", " + coord.longitude);
+                        }
+                    });
+                    infoWindow.open(marker);
+
                     mMarkerArrayLIst.add(marker);
                     mLatLngList.add(coord);
                     if (mLatLngList.size() > 2) {
@@ -109,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         );
+
 
 
         CameraPosition cameraPosition = new CameraPosition(
@@ -170,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initViews() {
         maptype_spinner = findViewById(R.id.maptype_spinner);
         btnTest = findViewById(R.id.btnTest);
+        btnMove = findViewById(R.id.btnMove);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.map_type, R.layout.custom_spinner_item);
         adapter.setDropDownViewResource(R.layout.custom_spinner_item_click);
         maptype_spinner.setAdapter(adapter);
@@ -184,6 +200,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mLatLngList.clear();
             }
         });
+        btnMove.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                CameraPosition cameraPosition = new CameraPosition(
+                        new LatLng(35.962248, 126.680006), 12
+                );
+                naverMap.setCameraPosition(cameraPosition);
+            }
+        });
+
 
 
     }
