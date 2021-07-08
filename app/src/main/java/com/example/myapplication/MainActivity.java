@@ -36,6 +36,8 @@ import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    // 2021-07-08 예은이가 코드를 이상하게 해서 클론하여 다시 시작
+
     Spinner maptype_spinner;
     NaverMap mMap;
     PolygonOverlay mPolygon;
